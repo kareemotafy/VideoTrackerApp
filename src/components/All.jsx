@@ -1,17 +1,7 @@
 import { useState, useEffect } from "react";
-import {
-  Card,
-  Grid,
-  IconButton,
-  Button,
-  Modal,
-  LinearProgress,
-} from "@mui/material";
-import AddBoxIcon from "@mui/icons-material/AddBox";
+import { Card, Grid } from "@mui/material";
 import ReactPlayer from "react-player";
-import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
-import { storage, db } from "../util/firebase";
+import { db } from "../util/firebase";
 import { getDocs, collection } from "firebase/firestore";
 
 const All = () => {
