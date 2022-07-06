@@ -6,6 +6,8 @@ import {
   Button,
   Modal,
   LinearProgress,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import AddBoxIcon from "@mui/icons-material/AddBox";
 import ReactPlayer from "react-player";
@@ -21,6 +23,9 @@ const Home = () => {
   const [progressState, setProgressState] = useState(0);
   const [loading, setLoading] = useState(false);
   const [cancel, setCancel] = useState(() => {});
+  const theme = useTheme();
+
+  const isMD = useMediaQuery(theme.breakpoints.down("md"));
 
   function onVideoChange(e) {
     setVideoFilePath(URL.createObjectURL(e.target?.files?.[0]));
@@ -56,10 +61,13 @@ const Home = () => {
             return URL;
           })
           .then(async (data) => {
-            await setDoc(doc(db, "all", "videos"), {
-              date: Date.now(),
-              videoURL: data,
-            });
+            await setDoc(
+              doc(db, "videos", Date.now() + data.slice(data.length - 10)),
+              {
+                date: Date.now(),
+                videoURL: data,
+              }
+            );
           })
           .finally(() => {
             navigate("/all");
@@ -78,14 +86,26 @@ const Home = () => {
               <li key={index}></li>
             ))}
         </ul>
-
+        <Button
+          style={{
+            marginBottom: 10,
+            position: "relative",
+            top: isMD ? "5%" : "10%",
+            left: isMD ? "5%" : "25%",
+            backgroundColor: "white",
+          }}
+          variant="outlined"
+          onClick={() => navigate("/all")}
+        >
+          go to /all
+        </Button>
         {!loading && (
           <Card
             style={{
               margin: "0 auto",
-              width: "50%",
+              width: isMD ? "90%" : "50%",
               position: "relative",
-              top: "20%",
+              top: isMD ? "5%" : "10%",
             }}
           >
             <div style={{ padding: 30 }}>
@@ -101,14 +121,31 @@ const Home = () => {
                 onChange={onVideoChange}
               />
 
-              <Grid
-                container
-                alignItems="center"
-                justifyContent="center"
-                spacing={5}
-                style={{ marginTop: 5 }}
-              >
-                <Grid item xs={2}>
+              <Grid container style={{ marginTop: 5 }}>
+                {videoFilePath && (
+                  <Grid
+                    item
+                    xl={10}
+                    lg={10}
+                    md={12}
+                    sm={12}
+                    xs={12}
+                    container
+                    justifyContent="center"
+                  >
+                    <ReactPlayer controls url={videoFilePath} />
+                  </Grid>
+                )}
+                <Grid
+                  item
+                  xl={!!videoFilePath ? 2 : 12}
+                  lg={!!videoFilePath ? 2 : 12}
+                  md={12}
+                  sm={12}
+                  xs={12}
+                  container
+                  justifyContent="center"
+                >
                   <IconButton component="label" htmlFor="icon-button-file">
                     <AddBoxIcon
                       style={{
@@ -118,21 +155,11 @@ const Home = () => {
                     />
                   </IconButton>
                 </Grid>
-                {videoFilePath && (
-                  <Grid item xs={10} container justifyContent="center">
-                    <div style={{ minHeight: 200 }}>
-                      <ReactPlayer
-                        width={400}
-                        height={200}
-                        controls
-                        url={videoFilePath}
-                      />
-                    </div>
-                  </Grid>
-                )}
+
                 <Grid item xs={12} container justifyContent="center">
                   {video && (
                     <Button
+                      style={{ marginTop: 10 }}
                       variant="contained"
                       onClick={() => handleUploadVideo()}
                     >
